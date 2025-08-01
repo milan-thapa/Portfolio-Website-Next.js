@@ -16,24 +16,24 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Milan Thapa | Portfolio",
   description:
-    "I’m Milan Thapa, a full-stack developer from Kathmandu, Nepal, with a Bachelor’s in Computer Science and Information Technology from Tribhuvan University. I specialize in both front-end and back-end development and have a strong background in web and graphic design. Passionate about creating user-friendly experiences, I enjoy tackling complex challenges and continuously enhancing my skills.",
+    "I’m Milan Thapa, a full-stack developer from Kathmandu, Nepal, with a Bachelor’s in CSIT from Tribhuvan University. I specialize in full-stack web development and UI/UX design.",
   keywords:
-    "Milan Thapa, Full-Stack Developer, Frontend Developer, React Developer, UI/UX Designer, Web Developer Nepal, CSIT Graduate, SEO expert, Next.js Portfolio",
-  authors: [{ name: "Milan Thapa", url: "https://thapa-milan.com.np" }],
+    "Milan Thapa, Full-Stack Developer, React Developer, Next.js Developer, UI/UX, Web Developer Nepal, CSIT Graduate, Portfolio Website",
+  authors: [{ name: "Milan Thapa", url: "https://milanthapa1.com.np" }],
   creator: "Milan Thapa",
   publisher: "Milan Thapa",
-  metadataBase: new URL("https://thapa-milan.com.np"),
+  metadataBase: new URL("https://milanthapa1.com.np"),
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://thapa-milan.com.np",
+    url: "https://milanthapa1.com.np",
     siteName: "Milan Thapa Portfolio",
     title: "Milan Thapa | Full-Stack Developer",
     description:
-      "Explore Milan Thapa's personal portfolio website featuring full-stack projects, creative UI/UX designs, and modern web technologies.",
+      "Explore Milan Thapa's portfolio with modern web projects, UI/UX designs, and full-stack skills using React, Next.js, and more.",
     images: [
       {
-        url: "/profile.jpg",
+        url: "https://milanthapa1.com.np/profile.jpg",
         width: 1200,
         height: 630,
         alt: "Milan Thapa Portfolio Preview",
@@ -45,8 +45,8 @@ export const metadata: Metadata = {
     creator: "@MilanThapa",
     title: "Milan Thapa | Full-Stack Developer",
     description:
-      "Visit the portfolio of Milan Thapa, a skilled full-stack developer from Nepal specializing in React, Next.js, and modern UI/UX.",
-    images: ["/profile.jpg"],
+      "Visit the portfolio of Milan Thapa, a full-stack developer from Nepal specializing in modern web and UI/UX.",
+    images: ["https://milanthapa1.com.np/profile.jpg"],
   },
   robots: {
     index: true,
@@ -69,19 +69,42 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-// Root layout component
+// Root Layout
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={poppins.variable}>
       <head>
         {/* Canonical URL */}
-        <link rel="canonical" href="https://thapa-milan.com.np" />
+        <link rel="canonical" href="https://milanthapa1.com.np" />
 
         {/* Favicon and Manifest */}
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
+
+        {/* JSON-LD Structured Data for Rich Snippets */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Milan Thapa",
+              url: "https://milanthapa1.com.np",
+              image: "https://milanthapa1.com.np/profile.jpg",
+              sameAs: [
+                "https://github.com/milan-thapa",
+                "https://www.linkedin.com/in/milanthapa2003/",
+              ],
+              jobTitle: "Full-Stack Developer",
+              worksFor: {
+                "@type": "Organization",
+                name: "Freelance",
+              },
+            }),
+          }}
+        />
       </head>
       <body className="font-sans antialiased bg-white text-black dark:bg-neutral-950 dark:text-white">
         {children}
