@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -10,13 +11,21 @@ type FormData = {
 };
 
 export default function Contact() {
-  const [formData, setFormData] = useState<FormData>({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">(
+    "idle"
+  );
 
   const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isFormIncomplete = !formData.name || !formData.email || !formData.message;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -72,7 +81,8 @@ export default function Contact() {
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-4xl font-bold mb-4">Get in Touch</h2>
         <p className="mb-10 text-gray-600 dark:text-gray-400">
-          Have a project in mind, want to collaborate, or just say hi? Fill out the form below and I’ll get back to you soon.
+          Have a project in mind, want to collaborate, or just say hi? Fill out
+          the form below and I’ll get back to you soon.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
@@ -130,7 +140,7 @@ export default function Contact() {
             className={`px-8 py-4 text-white font-semibold rounded-md transition-all duration-300 ${
               status === "sending" || isFormIncomplete
                 ? "bg-blue-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
+                : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
             }`}
           >
             {status === "sending" ? "Sending..." : "Send Message"}
