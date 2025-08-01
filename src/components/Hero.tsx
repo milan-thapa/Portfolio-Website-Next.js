@@ -47,7 +47,7 @@ export default function Hero() {
   return (
     <section
       aria-label="Hero section introducing Milan Thapa"
-      className="min-h-screen flex items-center justify-center px-6 bg-white dark:bg-neutral-950"
+      className="min-h-screen flex items-center justify-center px-6 bg-black text-white"
     >
       <div className="max-w-6xl w-full grid md:grid-cols-2 gap-10 items-center">
         {/* Image */}

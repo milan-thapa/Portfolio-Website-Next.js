@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { FaFutbol, FaGamepad } from "react-icons/fa";
+import { GiMountainRoad, GiPaintBrush } from "react-icons/gi";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -9,7 +11,7 @@ const containerVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      staggerChildren: 0.25,
+      staggerChildren: 0.3,
       ease: "easeOut",
       duration: 0.8,
     },
@@ -17,8 +19,8 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 };
 
 export default function About() {
@@ -37,71 +39,36 @@ export default function About() {
       initial="hidden"
       animate={animationStarted ? "visible" : "hidden"}
       variants={containerVariants}
+      viewport={{ once: true, amount: 0.3 }}
     >
-      <div className="max-w-5xl w-full space-y-12">
-        <motion.div
-          className="text-center md:text-left"
+      <div className="max-w-4xl w-full space-y-10 text-gray-300 text-lg md:text-xl leading-relaxed">
+        <motion.h2
+          id="about-heading"
+          className="text-4xl sm:text-5xl font-extrabold text-white mb-8 inline-block relative"
           variants={itemVariants}
           style={{ perspective: 600 }}
         >
-          <h2
-            id="about-heading"
-            className="text-4xl sm:text-5xl font-extrabold text-white relative inline-block"
-          >
-            About Me
-            <span className="block w-24 h-1 bg-blue-600 rounded-full mt-3 mx-auto md:mx-0 transition-transform duration-500 ease-in-out hover:scale-x-110" />
-          </h2>
-        </motion.div>
+          About Me
+          <span className="block w-24 h-1 bg-blue-600 rounded-full mt-3 transition-transform duration-500 ease-in-out hover:scale-x-110 origin-left" />
+        </motion.h2>
 
-        <motion.div
-          className="space-y-8 text-center md:text-left"
-          variants={itemVariants}
-        >
-          <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
-            Hi, I’m{" "}
-            <strong className="font-semibold text-blue-400 transition-colors duration-300 hover:text-blue-600 cursor-default">
-              Milan Thapa
-            </strong>{" "}
-            — a{" "}
-            <strong className="font-semibold text-purple-400 transition-colors duration-300 hover:text-purple-600 cursor-default">
-              Full-Stack Developer
-            </strong>{" "}
-            based in Kathmandu, Nepal. I hold a Bachelor's degree in Computer Science and Information Technology from Tribhuvan University.
-          </p>
+        <motion.p variants={itemVariants}>
+          Hello everyone! I’m <strong className="text-blue-400">Milan Thapa</strong>, proudly hailing from the beautiful Pyuthan, Nepal.
+        </motion.p>
 
-          <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
-            My expertise lies in crafting robust, scalable web applications, both on the{" "}
-            <strong className="font-semibold text-green-400 transition-colors duration-300 hover:text-green-600 cursor-default">
-              frontend
-            </strong>{" "}
-            and{" "}
-            <strong className="font-semibold text-green-400 transition-colors duration-300 hover:text-green-600 cursor-default">
-              backend
-            </strong>
-            . I’m also passionate about{" "}
-            <strong className="font-semibold text-yellow-400 transition-colors duration-300 hover:text-yellow-500 cursor-default">
-              UI/UX design
-            </strong>{" "}
-            — creating delightful and user-friendly experiences.
-          </p>
+        <motion.p variants={itemVariants}>
+          I am proficient in frontend and backend development using technologies like React.js, Next.js, and Node.js. I also enjoy working with UI/UX design to create user-friendly experiences.
+        </motion.p>
 
-          <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
-            Outside of coding, you'll find me exploring new technologies, sharpening my skills, and contributing to open-source projects.
-          </p>
+        <motion.p variants={itemVariants}>
+          My passion for technology sparked early in childhood, driven by an insatiable curiosity and a fascination with discovering how things work. This eagerness to explore new tools and ideas has fueled my journey, inspiring me to constantly learn and evolve as a developer.
+        </motion.p>
 
-          {/* 👉 Download CV Button */}
-          <motion.div variants={itemVariants} className="pt-6">
-            <a
-              href="Milan-Thapa-cv.pdf" // Make sure your CV is placed inside the public folder as public/cv.pdf
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out"
-            >
-              Download CV
-            </a>
-          </motion.div>
-        </motion.div>
+      
+
+     
+
+
       </div>
     </motion.section>
   );
