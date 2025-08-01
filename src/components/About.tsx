@@ -41,7 +41,7 @@ export default function About() {
       variants={containerVariants}
       viewport={{ once: true, amount: 0.3 }}
     >
-      <div className="max-w-4xl w-full space-y-10 text-gray-300 text-lg md:text-xl leading-relaxed">
+      <div className="max-w-6xl w-full space-y-10 text-gray-300 text-lg md:text-xl leading-relaxed">
         <motion.h2
           id="about-heading"
           className="text-4xl sm:text-5xl font-extrabold text-white mb-8 inline-block relative"
@@ -64,11 +64,7 @@ export default function About() {
           My passion for technology sparked early in childhood, driven by an insatiable curiosity and a fascination with discovering how things work. This eagerness to explore new tools and ideas has fueled my journey, inspiring me to constantly learn and evolve as a developer.
         </motion.p>
 
-      
-
-     
-
-
+ 
       </div>
     </motion.section>
   );
