@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import ScrollToPlugin from "gsap/ScrollToPlugin";
 
@@ -19,6 +20,9 @@ export default function Header() {
   const navRef = useRef<HTMLUListElement>(null);
   const [highlightStyle, setHighlightStyle] = useState({ left: 0, width: 0 });
 
+  // useRef to track GSAP scrolling state
+  const isClickScrolling = useRef(false);
+
   const updateHighlight = () => {
     if (!navRef.current) return;
     const navLinks = navRef.current.querySelectorAll("button");
@@ -27,7 +31,6 @@ export default function Header() {
       setHighlightStyle({ left: 0, width: 0 });
       return;
     }
-
     const navRect = navRef.current.getBoundingClientRect();
     const activeRect = (navLinks[activeIndex] as HTMLElement).getBoundingClientRect();
     setHighlightStyle({
@@ -37,28 +40,37 @@ export default function Header() {
   };
 
   useEffect(() => {
+    let timeout: NodeJS.Timeout | null = null;
+
     const handleScroll = () => {
-      const scrollY = window.scrollY + 200;
-      let currentSection = "home";
-      for (const item of navItems) {
-        if (item.id === "home") continue;
-        const section = document.getElementById(item.id);
-        if (section && section.offsetTop <= scrollY) {
-          currentSection = item.id;
+      if (isClickScrolling.current) return;
+
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        const scrollY = window.scrollY + 200;
+        let currentSection = "home";
+        for (const item of navItems) {
+          if (item.id === "home") continue;
+          const section = document.getElementById(item.id);
+          if (section && section.offsetTop <= scrollY) {
+            currentSection = item.id;
+          }
         }
-      }
-      setActive(currentSection);
+        setActive((prev) => (prev !== currentSection ? currentSection : prev));
+      }, 50);
     };
 
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", updateHighlight);
 
+    // Initial update
     handleScroll();
     updateHighlight();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", updateHighlight);
+      if (timeout) clearTimeout(timeout);
     };
   }, []);
 
@@ -71,28 +83,26 @@ export default function Header() {
     const duration = 1.2;
     const ease = "power3.inOut";
 
-    setMenuOpen(false);
     setActive(id);
+    setMenuOpen(false);
 
-    if (id === "home") {
-      gsap.to(window, {
-        duration,
-        scrollTo: { y: 0 },
-        ease,
-      });
-      return;
-    }
+    const target = id === "home" ? 0 : document.getElementById(id);
 
-    const section = document.getElementById(id);
-    if (section) {
-      gsap.to(window, {
-        duration,
-        scrollTo: { y: section, offsetY },
-        ease,
-      });
+    gsap.to(window, {
+      duration,
+      scrollTo: { y: target, offsetY: id === "home" ? 0 : offsetY },
+      ease,
+      onStart: () => {
+        isClickScrolling.current = true;
+      },
+      onComplete: () => {
+        isClickScrolling.current = false;
+      },
+    });
 
-      section.setAttribute("tabindex", "-1");
-      section.focus({ preventScroll: true });
+    if (id !== "home" && target instanceof HTMLElement) {
+      target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
     }
   };
 
@@ -108,7 +118,7 @@ export default function Header() {
           ref={navRef}
           className="hidden md:flex gap-8 text-gray-700 dark:text-gray-300 font-medium relative"
         >
-          {/* Highlight Bar */}
+          {/* Underline Highlight */}
           <div
             className="absolute bottom-0 h-[2.5px] bg-blue-600 dark:bg-blue-400 rounded transition-all duration-300"
             style={{
@@ -137,6 +147,8 @@ export default function Header() {
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden flex flex-col gap-1.5"
           type="button"
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
         >
           <span
             className={`block w-6 h-0.5 bg-gray-700 dark:bg-gray-300 rounded transition-transform duration-300 ${
