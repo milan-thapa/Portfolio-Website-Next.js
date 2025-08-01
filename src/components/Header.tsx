@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 import ScrollToPlugin from "gsap/ScrollToPlugin";
 
@@ -12,8 +12,6 @@ const navItems = [
   { id: "skills", label: "Skills" },
   { id: "contact", label: "Contact" },
 ];
-
-let isClickScrolling = false; // 🔐 used to prevent flicker
 
 export default function Header() {
   const [active, setActive] = useState("home");
@@ -29,6 +27,7 @@ export default function Header() {
       setHighlightStyle({ left: 0, width: 0 });
       return;
     }
+
     const navRect = navRef.current.getBoundingClientRect();
     const activeRect = (navLinks[activeIndex] as HTMLElement).getBoundingClientRect();
     setHighlightStyle({
@@ -39,8 +38,6 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (isClickScrolling) return;
-
       const scrollY = window.scrollY + 200;
       let currentSection = "home";
       for (const item of navItems) {
@@ -74,23 +71,28 @@ export default function Header() {
     const duration = 1.2;
     const ease = "power3.inOut";
 
-    isClickScrolling = true;
-    setActive(id);
     setMenuOpen(false);
+    setActive(id);
 
-    const target = id === "home" ? 0 : document.getElementById(id);
-    gsap.to(window, {
-      duration,
-      scrollTo: { y: target, offsetY: id === "home" ? 0 : offsetY },
-      ease,
-      onComplete: () => {
-        isClickScrolling = false;
-      },
-    });
+    if (id === "home") {
+      gsap.to(window, {
+        duration,
+        scrollTo: { y: 0 },
+        ease,
+      });
+      return;
+    }
 
-    if (id !== "home" && target instanceof HTMLElement) {
-      target.setAttribute("tabindex", "-1");
-      target.focus({ preventScroll: true });
+    const section = document.getElementById(id);
+    if (section) {
+      gsap.to(window, {
+        duration,
+        scrollTo: { y: section, offsetY },
+        ease,
+      });
+
+      section.setAttribute("tabindex", "-1");
+      section.focus({ preventScroll: true });
     }
   };
 
@@ -106,7 +108,7 @@ export default function Header() {
           ref={navRef}
           className="hidden md:flex gap-8 text-gray-700 dark:text-gray-300 font-medium relative"
         >
-          {/* Underline Highlight */}
+          {/* Highlight Bar */}
           <div
             className="absolute bottom-0 h-[2.5px] bg-blue-600 dark:bg-blue-400 rounded transition-all duration-300"
             style={{

@@ -31,31 +31,32 @@ export default function Skills() {
     <section
       id="skills"
       className="py-16 px-6 sm:px-12 lg:px-24 bg-white dark:bg-black"
-      aria-label="Skills section"
+      aria-labelledby="skills-heading"
     >
-      <h2 className="text-4xl font-bold text-center mb-12 text-neutral-900 dark:text-white">
+      <h2
+        id="skills-heading"
+        className="text-4xl font-bold text-center mb-12 text-neutral-900 dark:text-white"
+      >
         Skills
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8 max-w-6xl mx-auto">
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8 max-w-6xl mx-auto">
         {skills.map(({ name, icon: Icon, color }) => (
-          <div
+          <li
             key={name}
-            tabIndex={0}
-            className="flex flex-col items-center justify-center p-6 bg-gray-100 dark:bg-neutral-800 rounded-xl shadow-md hover:shadow-xl transition-shadow cursor-default focus:outline-none focus:ring-2 focus:ring-blue-600"
-            aria-label={name}
+            className="group flex flex-col items-center justify-center p-5 bg-gray-100 dark:bg-neutral-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 focus-within:ring-2 focus-within:ring-blue-600"
           >
             <Icon
-              className={`text-6xl mb-4 ${color}`}
+              className={`text-5xl sm:text-6xl mb-3 transition-transform duration-300 group-hover:scale-110 ${color}`}
               role="img"
               aria-hidden="true"
             />
-            <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <span className="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 text-center">
               {name}
-            </p>
-          </div>
+            </span>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }
