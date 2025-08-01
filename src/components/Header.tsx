@@ -79,7 +79,7 @@ export default function Header() {
   }, [active]);
 
   const scrollToSection = (id: string) => {
-    const offsetY = 100;
+    const offsetY = 100; // Adjust offset for fixed header height
     const duration = 1.2;
     const ease = "power3.inOut";
 
@@ -88,9 +88,13 @@ export default function Header() {
 
     const target = id === "home" ? 0 : document.getElementById(id);
 
+    // Calculate the scroll Y position as a number
+    const scrollTargetY =
+      id === "home" ? 0 : target instanceof HTMLElement ? target.offsetTop - offsetY : 0;
+
     gsap.to(window, {
       duration,
-      scrollTo: { y: target, offsetY: id === "home" ? 0 : offsetY },
+      scrollTo: { y: scrollTargetY },
       ease,
       onStart: () => {
         isClickScrolling.current = true;
