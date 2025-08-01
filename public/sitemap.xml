@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>https://www.milanthapa1.com.np/sitemap.xml</loc>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.milanthapa1.com.np/</loc>
     <lastmod>2025-08-01</lastmod>
-  </sitemap>
-</sitemapindex>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.milanthapa1.com.np/about</loc>
+    <lastmod>2025-08-01</lastmod>
+  </url>
+  <url>
+    <loc>https://www.milanthapa1.com.np/projects</loc>
+    <lastmod>2025-08-01</lastmod>
+  </url>
+  <url>
+    <loc>https://www.milanthapa1.com.np/contact</loc>
+    <lastmod>2025-08-01</lastmod>
+  </url>
+</urlset>
