@@ -1,9 +1,6 @@
-# *
+# Allow all user agents to crawl everything
 User-agent: *
 Allow: /
 
-# Host
-Host: https://milanthapa1.com.np
-
-# Sitemaps
+# Sitemap location
 Sitemap: https://milanthapa1.com.np/sitemap.xml
