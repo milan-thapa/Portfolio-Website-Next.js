@@ -70,8 +70,8 @@ This is the **personal portfolio of Milan Thapa**, showcasing my skills, project
 | Project | Description | Live Demo |
 |---------|-------------|-----------|
 | Portfolio Website | Personal branding & showcase | [Live Site](https://www.milanthapa1.com.np) |
-| Project 2 | Dynamic web application example | [Demo](#) |
-| Project 3 | Interactive UI example | [Demo](#) |
+| MilanEdu|  College Website | [Live Site ](https://milanedu.netlify.app/) |
+| HamroCSIT Clone  | An Educational website for CSIT students  | [Live Site](https://hamrocsit.netlify.app/) |
 
 > Add more projects as your portfolio grows.
 
