@@ -42,7 +42,8 @@ This is the **personal portfolio of Milan Thapa**, showcasing my skills, project
 ## 🎬 Demo
 
 **Portfolio in Action:**  
-[![Homepage Screenshot](/home.png)](https://www.milanthapa1.com.np)
+[![Homepage Screenshot](public/home.png)](https://www.milanthapa1.com.np)
+
 
 
 **Screenshots Carousel:**  
