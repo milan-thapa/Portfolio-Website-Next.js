@@ -46,12 +46,10 @@ This is the **personal portfolio of Milan Thapa**, showcasing my skills, project
 ![Portfolio Demo GIF](https://media.giphy.com/media/3o7aD6v0YF6uXyVw2k/giphy.gif)  
 
 **Screenshots Carousel:**  
+| Homepage | Projects Section | Contact Section |
+|----------|-----------------|----------------|
+| ![Home](/public/home.png) | ![Projects](/public/project.png) | ![Contact](/public/contact.png) |
 
-| Homepage | Projects | Contact |
-|----------|---------|---------|
-| ![Home](https://via.placeholder.com/300x200?text=Homepage) | ![Projects](https://via.placeholder.com/300x200?text=Projects) | ![Contact](https://via.placeholder.com/300x200?text=Contact) |
-
----
 
 ## ✨ Features
 
