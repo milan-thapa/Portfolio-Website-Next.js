@@ -89,15 +89,12 @@ This is the **personal portfolio of Milan Thapa**, showcasing my skills, project
 
 ## 📊 GitHub Stats
 
-![Milan's GitHub Stats](https://github-readme-stats.vercel.app/api?username=yourusername&show_icons=true&theme=radical)  
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=yourusername&layout=compact&theme=radical)
+![Milan Thapa's GitHub Stats](https://github-readme-stats.vercel.app/api?username=milan-thapa&show_icons=true&theme=radical)
+
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=milan-thapa&layout=compact&theme=radical)
 
 **Visitor Count:**  
-![Visitor Badge](https://visitor-badge.laobi.icu/badge?page_id=yourusername.your-repo)  
-
-> Replace `yourusername` with your GitHub username for live stats.
-
----
+![Visitor Badge](https://visitor-badge.laobi.icu/badge?page_id=milan-thapa.Portfolio-Website-Next.js)
 
 ## ⚡ Getting Started
 
