@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ToastContainer } from "react-toastify";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Poppins } from "next/font/google";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
@@ -108,6 +109,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans antialiased bg-white text-black dark:bg-neutral-950 dark:text-white">
         {children}
+
+        {/* Vercel Speed Insights */}
+        <SpeedInsights />
 
         {/* Toast messages */}
         <ToastContainer
