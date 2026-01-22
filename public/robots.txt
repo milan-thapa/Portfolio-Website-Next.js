@@ -1,6 +1,7 @@
 # Allow all user agents to crawl everything
 User-agent: *
 Allow: /
+Disallow: /error.txt
 
 # Sitemap location
 Sitemap: https://milanthapa1.com.np/sitemap.xml
