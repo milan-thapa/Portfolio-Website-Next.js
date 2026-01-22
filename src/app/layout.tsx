@@ -1,6 +1,9 @@
+// app/layout.tsx
 import type { Metadata, Viewport } from "next";
 import { ToastContainer } from "react-toastify";
 import { Poppins } from "next/font/google";
+import Script from "next/script";
+import Analytics from "../components/Analytics"; // Fixed relative path import
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 
@@ -83,7 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
 
-        {/* JSON-LD Structured Data for Rich Snippets */}
+        {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -105,11 +108,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }),
           }}
         />
+
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-X7WTRNVMGF"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-X7WTRNVMGF', { send_page_view: false, anonymize_ip: true });
+          `}
+        </Script>
       </head>
+
       <body className="font-sans antialiased bg-white text-black dark:bg-neutral-950 dark:text-white">
+        {/* SPA Pageview Tracking */}
+        <Analytics />
+
+        {/* Main content */}
         {children}
 
-        {/* Toast messages */}
+        {/* Toast notifications */}
         <ToastContainer
           position="bottom-right"
           autoClose={3000}
