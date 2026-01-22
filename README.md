@@ -148,11 +148,11 @@ Milan Thapa
 
 🌐 Website: https://www.milanthapa1.com.np
 
-📧 Email: your-email@example.com
+📧 Email: thapamilan9762@gmail.com
 
-💼 LinkedIn: linkedin.com/in/yourprofile
+💼 LinkedIn: https://www.linkedin.com/in/milanthapa1/
 
-🐦 Twitter: @yourhandle
+
 
 📝 License
 This project is licensed under the MIT License. See LICENSE for details.
