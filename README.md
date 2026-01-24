@@ -49,7 +49,7 @@ This is the **personal portfolio of Milan Thapa**, showcasing my skills, project
 **Screenshots Carousel:**  
 | Homepage | Projects Section | Contact Section |
 |----------|-----------------|----------------|
-| ![Home](/public/home.png) | ![Projects](/public/project.png) | ![Contact](/public/contact.png) |
+| ![Home](/public/home.png) | ![Projects](/public/projects.png) | ![Contact](/public/contact.png) |
 
 
 ## ✨ Features
