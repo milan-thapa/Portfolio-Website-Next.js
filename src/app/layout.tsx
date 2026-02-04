@@ -120,7 +120,6 @@ export const metadata: Metadata = {
     ],
   },
   manifest: "/site.webmanifest",
-
   category: "technology",
   classification: "Portfolio Website",
 };
@@ -139,6 +138,8 @@ export const viewport: Viewport = {
 
 // Root Layout
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const currentYear = new Date().getFullYear();
+
   // Enhanced JSON-LD Structured Data
   const personSchema = {
     "@context": "https://schema.org",
@@ -151,12 +152,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       width: 800,
       height: 800,
     },
-   sameAs: [
-  "https://github.com/milan-thapa",
-  "https://www.linkedin.com/in/milanthapa1/",
-  "https://www.instagram.com/milanthapa.soul",
-],
-
+    sameAs: [
+      "https://github.com/milan-thapa",
+      "https://www.linkedin.com/in/milanthapa1/",
+      "https://www.instagram.com/milanthapa.soul",
+    ],
     jobTitle: "Full-Stack Developer",
     description: "Full-stack developer specializing in React, Next.js, TypeScript, and modern web technologies",
     knowsAbout: [
@@ -202,7 +202,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       name: "Milan Thapa",
     },
     inLanguage: "en-US",
-    copyrightYear: new Date().getFullYear(),
+    copyrightYear: currentYear,
     copyrightHolder: {
       "@type": "Person",
       name: "Milan Thapa",
@@ -215,7 +215,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     name: "Milan Thapa - Web Development Services",
     description: "Full-stack web development services including React, Next.js, and modern web applications",
     url: "https://www.milanthapa1.com.np",
-    telephone: "+977-9762415657", // Add your phone number
+    telephone: "+977-9762415657",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Kathmandu",
@@ -275,9 +275,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
-        {/* Canonical URL */}
-        <link rel="canonical" href="https://www.milanthapa1.com.np" />
-
         {/* Additional SEO Meta Tags */}
         <meta name="application-name" content="Milan Thapa Portfolio" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -287,13 +284,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="msapplication-TileColor" content="#3b82f6" />
         <meta name="msapplication-tap-highlight" content="no" />
-
-        {/* Favicon and Manifest */}
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="manifest" href="/site.webmanifest" />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#3b82f6" />
 
         {/* Enhanced JSON-LD Structured Data - Multiple Schemas */}
         <script
@@ -362,9 +352,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Analytics />
 
         {/* Main content with semantic HTML and microdata */}
-        <div id="main-content" role="main">
+        <main id="main-content">
           {children}
-        </div>
+        </main>
 
         {/* Toast notifications */}
         <ToastContainer
