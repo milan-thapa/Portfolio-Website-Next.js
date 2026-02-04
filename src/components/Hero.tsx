@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring, useReducedMotion } from "framer-motion";
 import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
 import { HiArrowDown, HiSparkles } from "react-icons/hi2";
 
@@ -19,47 +19,60 @@ const SOCIAL_LINKS = [
     label: "LinkedIn",
     color: "hover:text-blue-400"
   },
-{
-  href: "https://instagram.com/milanthapa.soul",
-  icon: FaInstagram,
-  label: "Instagram",
-  color: "hover:text-pink-500" // Instagram-like hover color
-}
-
+  {
+    href: "https://www.instagram.com/milanthapa.soul",
+    icon: FaInstagram,
+    label: "Instagram",
+    color: "hover:text-pink-500"
+  }
 ];
 
 const TECH_STACK = ["React", "Next.js", "TypeScript", "Node.js", "Tailwind"];
 
 export default function Hero() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [currentTech, setCurrentTech] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
-  // Smooth mouse tracking
+  // Smooth mouse tracking with optimized performance
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const smoothMouseX = useSpring(mouseX, { stiffness: 50, damping: 20 });
   const smoothMouseY = useSpring(mouseY, { stiffness: 50, damping: 20 });
 
-  // Parallax effects
-  const backgroundX = useTransform(smoothMouseX, [-500, 500], [-30, 30]);
-  const backgroundY = useTransform(smoothMouseY, [-500, 500], [-30, 30]);
+  // Parallax effects (only active on desktop)
+  const backgroundX = useTransform(smoothMouseX, [-500, 500], [-20, 20]);
+  const backgroundY = useTransform(smoothMouseY, [-500, 500], [-20, 20]);
 
   useEffect(() => {
+    setIsMounted(true);
+
+    // Only enable mouse tracking on desktop devices
+    if (window.innerWidth < 1024) return;
+
+    let rafId: number;
     const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
+      // Use requestAnimationFrame for better performance
+      if (rafId) cancelAnimationFrame(rafId);
       
-      mouseX.set(clientX - centerX);
-      mouseY.set(clientY - centerY);
-      setMousePosition({ x: clientX, y: clientY });
+      rafId = requestAnimationFrame(() => {
+        const { clientX, clientY } = e;
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        
+        mouseX.set(clientX - centerX);
+        mouseY.set(clientY - centerY);
+      });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [mouseX, mouseY]);
 
-  // Rotating tech stack
+  // Rotating tech stack with cleanup
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTech((prev) => (prev + 1) % TECH_STACK.length);
@@ -76,21 +89,32 @@ export default function Hero() {
     window.scrollTo({ top: targetPosition, behavior: "smooth" });
   }, []);
 
+  // Animation variants with reduced motion support
+  const fadeInUp = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 30 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  const scaleIn = {
+    hidden: { opacity: 0, scale: shouldReduceMotion ? 1 : 0.9 },
+    visible: { opacity: 1, scale: 1 }
+  };
+
   return (
     <section
       id="home"
       className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden"
     >
       {/* Animated gradient background */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Main gradient orbs */}
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+        {/* Main gradient orbs - conditionally animated */}
         <motion.div
-          style={{ x: backgroundX, y: backgroundY }}
+          style={!shouldReduceMotion && isMounted ? { x: backgroundX, y: backgroundY } : {}}
           className="absolute top-1/4 -left-48 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"
-          animate={{
+          animate={!shouldReduceMotion ? {
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3],
-          }}
+          } : {}}
           transition={{
             duration: 8,
             repeat: Infinity,
@@ -98,12 +122,12 @@ export default function Hero() {
           }}
         />
         <motion.div
-          style={{ x: backgroundX, y: backgroundY }}
+          style={!shouldReduceMotion && isMounted ? { x: backgroundX, y: backgroundY } : {}}
           className="absolute bottom-1/4 -right-48 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
-          animate={{
+          animate={!shouldReduceMotion ? {
             scale: [1.2, 1, 1.2],
             opacity: [0.5, 0.3, 0.5],
-          }}
+          } : {}}
           transition={{
             duration: 10,
             repeat: Infinity,
@@ -112,10 +136,10 @@ export default function Hero() {
         />
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-3xl"
-          animate={{
+          animate={!shouldReduceMotion ? {
             scale: [1, 1.1, 1],
             rotate: [0, 90, 0],
-          }}
+          } : {}}
           transition={{
             duration: 20,
             repeat: Infinity,
@@ -140,15 +164,15 @@ export default function Hero() {
         {/* Left Column - Text Content */}
         <motion.div
           className="space-y-8 text-center lg:text-left"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           {/* Badge */}
           <motion.div
             className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-sm font-medium"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            variants={scaleIn}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <HiSparkles className="text-yellow-400 animate-pulse" />
@@ -157,25 +181,22 @@ export default function Hero() {
 
           {/* Main Heading */}
           <div className="space-y-4">
-            <motion.h1
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+            <motion.div
+              variants={fadeInUp}
               transition={{ delay: 0.3, duration: 0.8 }}
             >
-              <span className="block text-white/40 text-xl sm:text-2xl font-normal mb-2">
+              <p className="text-xl sm:text-2xl font-normal mb-2 text-white/40">
                 Hey, I'm
-              </span>
-              <span className="block bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+              </p>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
                 Milan Thapa
-              </span>
-            </motion.h1>
+              </h1>
+            </motion.div>
 
             {/* Animated subtitle */}
             <motion.div
               className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white/60 flex items-center gap-3 justify-center lg:justify-start flex-wrap"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              variants={fadeInUp}
               transition={{ delay: 0.5 }}
             >
               <span>I build with</span>
@@ -201,8 +222,7 @@ export default function Hero() {
           {/* Description */}
           <motion.p
             className="text-lg sm:text-xl text-white/60 max-w-2xl leading-relaxed mx-auto lg:mx-0"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            variants={fadeInUp}
             transition={{ delay: 0.6, duration: 0.8 }}
           >
             Full-stack developer from{" "}
@@ -213,20 +233,19 @@ export default function Hero() {
           {/* CTA Buttons */}
           <motion.div
             className="flex flex-wrap gap-4 justify-center lg:justify-start"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            variants={fadeInUp}
             transition={{ delay: 0.7, duration: 0.6 }}
           >
             <motion.button
               onClick={() => scrollToSection("projects")}
               className="group relative px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full font-semibold text-white overflow-hidden shadow-lg shadow-blue-500/25"
-              whileHover={{ scale: 1.05 }}
+              whileHover={!shouldReduceMotion ? { scale: 1.05 } : {}}
               whileTap={{ scale: 0.98 }}
             >
               <span className="relative z-10 flex items-center gap-2">
                 View My Work
                 <motion.span
-                  animate={{ x: [0, 5, 0] }}
+                  animate={!shouldReduceMotion ? { x: [0, 5, 0] } : {}}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 >
                   →
@@ -235,7 +254,7 @@ export default function Hero() {
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600"
                 initial={{ x: "-100%" }}
-                whileHover={{ x: 0 }}
+                whileHover={!shouldReduceMotion ? { x: 0 } : {}}
                 transition={{ duration: 0.3 }}
               />
             </motion.button>
@@ -243,7 +262,7 @@ export default function Hero() {
             <motion.button
               onClick={() => scrollToSection("contact")}
               className="px-8 py-4 bg-white/5 backdrop-blur-sm border-2 border-white/20 rounded-full font-semibold text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300"
-              whileHover={{ scale: 1.05 }}
+              whileHover={!shouldReduceMotion ? { scale: 1.05 } : {}}
               whileTap={{ scale: 0.98 }}
             >
               Get in Touch
@@ -253,8 +272,7 @@ export default function Hero() {
           {/* Social Links */}
           <motion.div
             className="flex gap-4 justify-center lg:justify-start pt-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            variants={fadeInUp}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
             {SOCIAL_LINKS.map(({ href, icon: Icon, label, color }, index) => (
@@ -265,10 +283,15 @@ export default function Hero() {
                 rel="noopener noreferrer"
                 aria-label={label}
                 className={`flex items-center justify-center w-12 h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-white/70 ${color} transition-all duration-300 hover:border-white/30 hover:bg-white/10`}
-                initial={{ opacity: 0, scale: 0.5 }}
+                initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8 + index * 0.1, type: "spring", stiffness: 260, damping: 20 }}
-                whileHover={{ scale: 1.1, y: -3 }}
+                transition={{ 
+                  delay: 0.8 + index * 0.1, 
+                  type: shouldReduceMotion ? "tween" : "spring", 
+                  stiffness: 260, 
+                  damping: 20 
+                }}
+                whileHover={!shouldReduceMotion ? { scale: 1.1, y: -3 } : {}}
                 whileTap={{ scale: 0.95 }}
               >
                 <Icon className="text-xl" />
@@ -280,17 +303,18 @@ export default function Hero() {
         {/* Right Column - Image */}
         <motion.div
           className="relative flex justify-center lg:justify-end"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
+          variants={scaleIn}
+          initial="hidden"
+          animate="visible"
           transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
         >
           {/* Decorative elements */}
           <motion.div
             className="absolute -top-4 -right-4 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl"
-            animate={{
+            animate={!shouldReduceMotion ? {
               scale: [1, 1.2, 1],
               opacity: [0.3, 0.5, 0.3],
-            }}
+            } : {}}
             transition={{
               duration: 4,
               repeat: Infinity,
@@ -303,9 +327,9 @@ export default function Hero() {
             {/* Animated border */}
             <motion.div
               className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-3xl opacity-75 blur-lg group-hover:opacity-100 transition-opacity duration-500"
-              animate={{
+              animate={!shouldReduceMotion ? {
                 rotate: [0, 360],
-              }}
+              } : {}}
               transition={{
                 duration: 20,
                 repeat: Infinity,
@@ -317,10 +341,12 @@ export default function Hero() {
             <div className="relative">
               <Image
                 src="/profile.jpg"
-                alt="Milan Thapa - Full-Stack Developer"
+                alt="Milan Thapa - Full-Stack Developer from Kathmandu, Nepal"
                 width={500}
                 height={500}
                 priority
+                placeholder="blur"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                 className="relative w-full max-w-[300px] sm:max-w-[400px] lg:max-w-[500px] h-auto rounded-3xl object-cover shadow-2xl transition-all duration-500 group-hover:scale-[1.02]"
               />
               
@@ -331,7 +357,7 @@ export default function Hero() {
             {/* Floating badge */}
             <motion.div
               className="absolute -bottom-4 -left-4 bg-slate-900/90 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-3 shadow-xl"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1, duration: 0.6 }}
             >
@@ -354,14 +380,14 @@ export default function Hero() {
       <motion.button
         onClick={() => scrollToSection("about")}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 hover:text-white/60 transition-colors group"
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2, duration: 0.8 }}
-        aria-label="Scroll to next section"
+        aria-label="Scroll to about section"
       >
         <span className="text-xs font-medium uppercase tracking-wider">Scroll</span>
         <motion.div
-          animate={{ y: [0, 8, 0] }}
+          animate={!shouldReduceMotion ? { y: [0, 8, 0] } : {}}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
           <HiArrowDown className="text-2xl" />
