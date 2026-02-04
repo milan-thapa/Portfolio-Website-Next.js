@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { FaGithub, FaLinkedin,  FaInstagram, FaHeart } from "react-icons/fa";
+import { motion, useReducedMotion } from "framer-motion";
+import { FaGithub, FaLinkedin, FaInstagram, FaHeart } from "react-icons/fa";
 import {
   HiArrowUp,
   HiMail,
@@ -24,14 +24,12 @@ const SOCIAL_LINKS = [
     label: "LinkedIn",
     color: "hover:text-blue-400"
   },
-{
-  href: "https://instagram.com/milanthapa.soul",
-  icon: FaInstagram,
-  label: "Instagram",
-  color: "hover:text-pink-500" // Instagram-like hover color
-},
-
-  
+  {
+    href: "https://www.instagram.com/milanthapa.soul",
+    icon: FaInstagram,
+    label: "Instagram",
+    color: "hover:text-pink-500"
+  },
 ];
 
 const QUICK_LINKS = [
@@ -50,15 +48,29 @@ const RESOURCES = [
 
 export default function Footer() {
   const [email, setEmail] = useState("");
-  const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "success">("idle");
+  const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "success" | "error">("idle");
+  const shouldReduceMotion = useReducedMotion();
+
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubscribeStatus("success");
-      setEmail("");
-      setTimeout(() => setSubscribeStatus("idle"), 3000);
+    
+    if (!email.trim()) {
+      return;
     }
+
+    if (!isValidEmail(email)) {
+      setSubscribeStatus("error");
+      setTimeout(() => setSubscribeStatus("idle"), 3000);
+      return;
+    }
+
+    // Here you would typically send the email to your backend/newsletter service
+    setSubscribeStatus("success");
+    setEmail("");
+    setTimeout(() => setSubscribeStatus("idle"), 5000);
   };
 
   const scrollToTop = () => {
@@ -74,21 +86,36 @@ export default function Footer() {
     }
   };
 
+  // Animation variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 }
+  };
+
+  const scaleIn = {
+    hidden: { opacity: 0, scale: shouldReduceMotion ? 1 : 0.5 },
+    visible: { opacity: 1, scale: 1 }
+  };
+
   return (
     <footer
       role="contentinfo"
-      aria-label="Footer"
       className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-black border-t border-white/10 overflow-hidden"
     >
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <motion.div
           className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"
-          animate={{
+          animate={!shouldReduceMotion ? {
             scale: [1, 1.3, 1],
             x: [0, 50, 0],
             rotate: [0, 45, 0],
-          }}
+          } : {}}
           transition={{
             duration: 20,
             repeat: Infinity,
@@ -97,11 +124,11 @@ export default function Footer() {
         />
         <motion.div
           className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
-          animate={{
+          animate={!shouldReduceMotion ? {
             scale: [1.2, 1, 1.2],
             x: [0, -50, 0],
             rotate: [0, -30, 0],
-          }}
+          } : {}}
           transition={{
             duration: 25,
             repeat: Infinity,
@@ -116,19 +143,20 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
             {/* Column 1: Brand & Description */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={fadeInUp}
               transition={{ duration: 0.6 }}
               className="lg:col-span-2"
             >
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-baseline gap-1 text-2xl md:text-3xl font-bold">
-                  <span className="text-blue-400">&lt;</span>
+                  <span className="text-blue-400" aria-hidden="true">&lt;</span>
                   <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
                     Milan
                   </span>
-                  <span className="text-cyan-400">/&gt;</span>
+                  <span className="text-cyan-400" aria-hidden="true">/&gt;</span>
                 </div>
               </div>
               
@@ -140,24 +168,30 @@ export default function Footer() {
               {/* Contact Info */}
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-white/60">
-                  <HiMapPin className="text-blue-400" />
+                  <HiMapPin className="text-blue-400" aria-hidden="true" />
                   <span className="text-sm">Kathmandu, Nepal</span>
                 </div>
                 <div className="flex items-center gap-3 text-white/60">
-                  <HiMail className="text-blue-400" />
-                  <a href="mailto:thapamilan9762@gmail.com" className="text-sm hover:text-white transition-colors">
-                  thapamilan9762@gmail.com
+                  <HiMail className="text-blue-400" aria-hidden="true" />
+                  <a 
+                    href="mailto:thapamilan9762@gmail.com" 
+                    className="text-sm hover:text-white transition-colors"
+                    aria-label="Email Milan Thapa"
+                  >
+                    thapamilan9762@gmail.com
                   </a>
                 </div>
               </div>
             </motion.div>
 
             {/* Column 2: Quick Links */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+            <motion.nav
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={fadeInUp}
               transition={{ duration: 0.6, delay: 0.1 }}
+              aria-label="Quick links"
             >
               <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
                 Quick Links
@@ -168,45 +202,50 @@ export default function Footer() {
                     <button
                       onClick={() => scrollToSection(link.href)}
                       className="text-white/60 hover:text-white transition-colors text-sm flex items-center gap-2 group"
+                      aria-label={`Navigate to ${link.label} section`}
                     >
-                      <span className="w-0 group-hover:w-4 h-px bg-blue-400 transition-all duration-300" />
+                      <span className="w-0 group-hover:w-4 h-px bg-blue-400 transition-all duration-300" aria-hidden="true" />
                       {link.label}
                     </button>
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </motion.nav>
 
             {/* Column 3: Resources */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={fadeInUp}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
-                Resources
-              </h3>
-              <ul className="space-y-3">
-                {RESOURCES.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-white/60 hover:text-white transition-colors text-sm flex items-center gap-2 group"
-                    >
-                      <span className="w-0 group-hover:w-4 h-px bg-blue-400 transition-all duration-300" />
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <nav aria-label="Resources">
+                <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
+                  Resources
+                </h3>
+                <ul className="space-y-3">
+                  {RESOURCES.map((link) => (
+                    <li key={link.label}>
+                      <a
+                        href={link.href}
+                        className="text-white/60 hover:text-white transition-colors text-sm flex items-center gap-2 group"
+                        aria-label={link.label}
+                      >
+                        <span className="w-0 group-hover:w-4 h-px bg-blue-400 transition-all duration-300" aria-hidden="true" />
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
 
               {/* Social Links */}
               <div className="mt-8">
                 <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
                   Follow Me
                 </h3>
-                <div className="flex gap-3">
+                <div className="flex gap-3" role="list" aria-label="Social media links">
                   {SOCIAL_LINKS.map(({ href, icon: Icon, label, color }, index) => (
                     <motion.a
                       key={label}
@@ -214,18 +253,28 @@ export default function Footer() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={label}
+                      role="listitem"
                       className={`group relative flex items-center justify-center w-10 h-10 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg text-white/60 ${color} transition-all duration-300 hover:border-white/30 hover:bg-white/10`}
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.3 + index * 0.1, type: "spring", stiffness: 260, damping: 20 }}
-                      whileHover={{ scale: 1.1, y: -3 }}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, margin: "-100px" }}
+                      variants={scaleIn}
+                      transition={{ 
+                        delay: 0.3 + index * 0.1, 
+                        type: shouldReduceMotion ? "tween" : "spring", 
+                        stiffness: 260, 
+                        damping: 20 
+                      }}
+                      whileHover={!shouldReduceMotion ? { scale: 1.1, y: -3 } : {}}
                       whileTap={{ scale: 0.95 }}
                     >
                       <Icon className="text-lg" />
                       
                       {/* Tooltip */}
-                      <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 whitespace-nowrap shadow-lg">
+                      <span 
+                        className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 whitespace-nowrap shadow-lg"
+                        role="tooltip"
+                      >
                         {label}
                       </span>
                     </motion.a>
@@ -238,9 +287,10 @@ export default function Footer() {
 
         {/* Newsletter Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
           transition={{ duration: 0.6, delay: 0.3 }}
           className="py-12 border-y border-white/10"
         >
@@ -252,23 +302,44 @@ export default function Footer() {
               Get notified about new projects, articles, and opportunities.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <form 
+              onSubmit={handleSubscribe}
+              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+              aria-label="Newsletter subscription"
+            >
               <div className="flex-1 relative">
+                <label htmlFor="newsletter-email" className="sr-only">
+                  Email address
+                </label>
                 <input
+                  id="newsletter-email"
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-3.5 text-white placeholder-white/40 focus:outline-none focus:border-blue-400/50 focus:bg-white/10 transition-all duration-300"
+                  className={`w-full bg-white/5 border ${subscribeStatus === "error" ? 'border-red-400/50' : 'border-white/10'} rounded-xl px-5 py-3.5 text-white placeholder-white/40 focus:outline-none focus:border-blue-400/50 focus:bg-white/10 transition-all duration-300`}
+                  aria-invalid={subscribeStatus === "error"}
+                  aria-describedby={subscribeStatus === "error" ? "newsletter-error" : undefined}
                 />
+                {subscribeStatus === "error" && (
+                  <p id="newsletter-error" className="mt-1 text-xs text-red-400 text-left">
+                    Please enter a valid email address
+                  </p>
+                )}
               </div>
               <button
-                onClick={handleSubscribe}
-                className="px-6 py-3.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl font-semibold text-white hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 hover:scale-[1.02]"
+                type="submit"
+                disabled={subscribeStatus === "success"}
+                className={`px-6 py-3.5 rounded-xl font-semibold text-white transition-all duration-300 ${
+                  subscribeStatus === "success"
+                    ? "bg-green-500 cursor-default"
+                    : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:shadow-lg hover:shadow-blue-500/25 hover:scale-[1.02]"
+                }`}
+                aria-label={subscribeStatus === "success" ? "Successfully subscribed" : "Subscribe to newsletter"}
               >
                 {subscribeStatus === "success" ? "Subscribed! ✓" : "Subscribe"}
               </button>
-            </div>
+            </form>
           </div>
         </motion.div>
 
@@ -277,9 +348,10 @@ export default function Footer() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Copyright */}
             <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={fadeIn}
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-sm text-white/60 text-center sm:text-left"
             >
@@ -292,34 +364,37 @@ export default function Footer() {
 
             {/* Made with love */}
             <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={fadeIn}
               transition={{ duration: 0.6, delay: 0.5 }}
               className="flex items-center gap-2 text-sm text-white/60"
             >
               <span>Built with</span>
               <motion.span
-                animate={{ scale: [1, 1.2, 1] }}
+                animate={!shouldReduceMotion ? { scale: [1, 1.2, 1] } : {}}
                 transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
               >
-                <FaHeart className="text-red-400" />
+                <FaHeart className="text-red-400" aria-label="love" />
               </motion.span>
               <span>using</span>
-              <HiCode className="text-blue-400" />
+              <HiCode className="text-blue-400" aria-hidden="true" />
               <span className="text-white/80 font-medium">Next.js & Tailwind</span>
             </motion.p>
 
             {/* Back to top */}
             <motion.button
               onClick={scrollToTop}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={fadeIn}
               transition={{ duration: 0.6, delay: 0.6 }}
               className="group flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg text-white/60 hover:text-white hover:border-white/30 hover:bg-white/10 transition-all duration-300"
-              whileHover={{ y: -2 }}
+              whileHover={!shouldReduceMotion ? { y: -2 } : {}}
               whileTap={{ scale: 0.95 }}
+              aria-label="Scroll back to top"
             >
               <span className="text-sm font-medium">Back to top</span>
               <HiArrowUp className="text-lg group-hover:-translate-y-1 transition-transform duration-300" />
@@ -331,9 +406,9 @@ export default function Footer() {
       {/* Decorative gradient line */}
       <motion.div
         className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent"
-        animate={{
+        animate={!shouldReduceMotion ? {
           backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-        }}
+        } : {}}
         transition={{
           duration: 3,
           repeat: Infinity,
@@ -342,6 +417,7 @@ export default function Footer() {
         style={{
           backgroundSize: "200% 100%",
         }}
+        aria-hidden="true"
       />
     </footer>
   );
