@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 import { 
@@ -85,10 +85,22 @@ const projects = [
 
 export default function Projects() {
   const [filter, setFilter] = useState<"all" | "featured">("all");
+  const shouldReduceMotion = useReducedMotion();
   
   const filteredProjects = filter === "all" 
     ? projects 
     : projects.filter(p => p.featured);
+
+  // Animation variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  const cardFadeIn = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 30 },
+    visible: { opacity: 1, y: 0 }
+  };
 
   return (
     <section 
@@ -96,14 +108,14 @@ export default function Projects() {
       className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white px-4 sm:px-6 lg:px-8 py-24 sm:py-32 overflow-hidden"
     >
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <motion.div
           className="absolute top-1/3 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"
-          animate={{
+          animate={!shouldReduceMotion ? {
             scale: [1, 1.2, 1],
             x: [0, 50, 0],
             y: [0, -30, 0],
-          }}
+          } : {}}
           transition={{
             duration: 20,
             repeat: Infinity,
@@ -112,11 +124,11 @@ export default function Projects() {
         />
         <motion.div
           className="absolute bottom-1/3 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
-          animate={{
+          animate={!shouldReduceMotion ? {
             scale: [1.2, 1, 1.2],
             x: [0, -50, 0],
             y: [0, 30, 0],
-          }}
+          } : {}}
           transition={{
             duration: 25,
             repeat: Infinity,
@@ -127,11 +139,12 @@ export default function Projects() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16 sm:mb-20">
+        <header className="text-center mb-16 sm:mb-20">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full mb-6"
           >
@@ -140,9 +153,10 @@ export default function Projects() {
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
           >
@@ -152,9 +166,10 @@ export default function Projects() {
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-xl text-white/60 max-w-3xl mx-auto mb-8"
           >
@@ -163,14 +178,20 @@ export default function Projects() {
 
           {/* Filter Buttons */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="inline-flex gap-2 p-1.5 bg-white/5 backdrop-blur-md border border-white/10 rounded-full"
+            role="tablist"
+            aria-label="Project filter"
           >
             <button
               onClick={() => setFilter("all")}
+              role="tab"
+              aria-selected={filter === "all"}
+              aria-controls="projects-grid"
               className={`relative px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-300 ${
                 filter === "all" ? "text-white" : "text-white/60 hover:text-white"
               }`}
@@ -186,6 +207,9 @@ export default function Projects() {
             </button>
             <button
               onClick={() => setFilter("featured")}
+              role="tab"
+              aria-selected={filter === "featured"}
+              aria-controls="projects-grid"
               className={`relative px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-300 ${
                 filter === "featured" ? "text-white" : "text-white/60 hover:text-white"
               }`}
@@ -200,16 +224,21 @@ export default function Projects() {
               <span className="relative z-10">Featured</span>
             </button>
           </motion.div>
-        </div>
+        </header>
 
         {/* Projects Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div 
+          id="projects-grid"
+          role="tabpanel"
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+        >
           {filteredProjects.map((project, index) => (
-            <motion.div
+            <motion.article
               key={project.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={cardFadeIn}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               className="group relative"
             >
@@ -227,12 +256,14 @@ export default function Projects() {
                   </div>
                 )}
 
-                {/* Icon header */}
+                {/* Content */}
                 <div className="relative p-6 pb-4">
+                  {/* Icon */}
                   <motion.div
                     className={`w-14 h-14 rounded-xl bg-gradient-to-br ${project.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
-                    whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+                    whileHover={!shouldReduceMotion ? { rotate: [0, -10, 10, -10, 0] } : {}}
                     transition={{ duration: 0.5 }}
+                    aria-hidden="true"
                   >
                     <project.icon className="text-2xl text-white" />
                   </motion.div>
@@ -248,10 +279,11 @@ export default function Projects() {
                   </p>
 
                   {/* Tech stack */}
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-2 mb-4" role="list" aria-label="Technologies used">
                     {project.tech.map((tech) => (
                       <span
                         key={tech}
+                        role="listitem"
                         className="px-2.5 py-1 text-xs bg-white/5 border border-white/10 rounded-lg text-white/70 font-medium"
                       >
                         {tech}
@@ -268,6 +300,7 @@ export default function Projects() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex-1 group/btn relative overflow-hidden"
+                      aria-label={`View live demo of ${project.title}`}
                     >
                       <div className="relative px-4 py-2.5 bg-white/5 border border-white/20 rounded-lg font-medium text-sm text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300 flex items-center justify-center gap-2">
                         <span>Live Demo</span>
@@ -275,7 +308,10 @@ export default function Projects() {
                       </div>
                     </Link>
                   ) : (
-                    <div className="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg font-medium text-sm text-white/40 flex items-center justify-center gap-2 cursor-not-allowed">
+                    <div 
+                      className="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg font-medium text-sm text-white/40 flex items-center justify-center gap-2 cursor-not-allowed"
+                      aria-label="Demo coming soon"
+                    >
                       <span>Coming Soon</span>
                     </div>
                   )}
@@ -285,6 +321,7 @@ export default function Projects() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group/btn relative overflow-hidden"
+                    aria-label={`View source code for ${project.title}`}
                   >
                     <div className="relative px-4 py-2.5 bg-white/5 border border-white/20 rounded-lg font-medium text-sm text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300 flex items-center justify-center gap-2">
                       <HiCodeBracket className="text-base group-hover/btn:rotate-12 transition-transform duration-300" />
@@ -297,22 +334,27 @@ export default function Projects() {
                   className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${project.color}`}
                   initial={{ scaleX: 0 }}
                   whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.8, delay: index * 0.1 + 0.3 }}
+                  aria-hidden="true"
                 />
               </div>
 
               {/* Hover glow effect */}
-              <div className={`absolute -inset-0.5 bg-gradient-to-r ${project.color} rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500 -z-10`} />
-            </motion.div>
+              <div 
+                className={`absolute -inset-0.5 bg-gradient-to-r ${project.color} rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500 -z-10`}
+                aria-hidden="true"
+              />
+            </motion.article>
           ))}
         </div>
 
         {/* View More CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={cardFadeIn}
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-center mt-16"
         >
@@ -324,7 +366,7 @@ export default function Projects() {
           >
             <span>View All Projects on GitHub</span>
             <motion.span
-              animate={{ x: [0, 5, 0] }}
+              animate={!shouldReduceMotion ? { x: [0, 5, 0] } : {}}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
               <HiArrowTopRightOnSquare className="text-xl" />
