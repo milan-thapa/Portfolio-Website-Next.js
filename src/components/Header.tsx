@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
 const navItems = [
   { id: "home", label: "Home", icon: "◆" },
@@ -16,11 +16,15 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const isClickScrolling = useRef(false);
+  const shouldReduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
   
   // Parallax effect for header background
-  const headerOpacity = useTransform(scrollY, [0, 100], [0.7, 0.95]);
-  const headerBlur = useTransform(scrollY, [0, 100], [8, 20]);
+  const headerBlur = useTransform(
+    scrollY, 
+    [0, 100], 
+    shouldReduceMotion ? [20, 20] : [8, 20]
+  );
 
   useEffect(() => {
     let ticking = false;
@@ -55,6 +59,28 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && menuOpen) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("keydown", handleEscape);
+      // Prevent body scroll when menu is open
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
   const scrollToSection = (id: string) => {
     setActive(id);
     setMenuOpen(false);
@@ -85,13 +111,14 @@ export default function Header() {
           ? "bg-slate-950/95 shadow-2xl shadow-blue-500/10 border-b border-white/5" 
           : "bg-slate-950/70"
       }`}
+      role="banner"
     >
       {/* Animated gradient line */}
       <motion.div
         className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-400/50 to-transparent"
-        animate={{
+        animate={!shouldReduceMotion ? {
           backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-        }}
+        } : {}}
         transition={{
           duration: 3,
           repeat: Infinity,
@@ -100,39 +127,46 @@ export default function Header() {
         style={{
           backgroundSize: "200% 100%",
         }}
+        aria-hidden="true"
       />
 
-      <nav className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 h-20 relative">
+      <nav 
+        className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8 h-20 relative"
+        aria-label="Main navigation"
+      >
         {/* Logo with enhanced animations */}
-        <motion.div
+        <motion.button
           className="relative cursor-pointer select-none group z-50"
           onClick={() => scrollToSection("home")}
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          whileHover={{ scale: 1.02 }}
+          whileHover={!shouldReduceMotion ? { scale: 1.02 } : {}}
+          aria-label="Go to home"
         >
           <div className="flex items-center gap-2">
             {/* Accent dot with pulse */}
             <motion.div
               className="w-2 h-2 rounded-full bg-blue-400"
-              animate={{
+              animate={!shouldReduceMotion ? {
                 scale: [1, 1.2, 1],
                 opacity: [0.5, 1, 0.5],
-              }}
+              } : {}}
               transition={{
                 duration: 2,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
+              aria-hidden="true"
             />
             
             {/* Logo text */}
             <div className="flex items-baseline gap-1 text-2xl md:text-3xl font-bold">
               <motion.span
                 className="font-mono text-blue-400 group-hover:text-blue-300 transition-colors duration-300"
-                whileHover={{ rotate: [-5, 5, -5, 0] }}
+                whileHover={!shouldReduceMotion ? { rotate: [-5, 5, -5, 0] } : {}}
                 transition={{ duration: 0.5 }}
+                aria-hidden="true"
               >
                 &lt;
               </motion.span>
@@ -143,8 +177,9 @@ export default function Header() {
 
               <motion.span
                 className="font-mono text-cyan-400 group-hover:text-cyan-300 transition-colors duration-300"
-                whileHover={{ rotate: [5, -5, 5, 0] }}
+                whileHover={!shouldReduceMotion ? { rotate: [5, -5, 5, 0] } : {}}
                 transition={{ duration: 0.5 }}
+                aria-hidden="true"
               >
                 /&gt;
               </motion.span>
@@ -157,40 +192,45 @@ export default function Header() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.6 }}
             transition={{ delay: 0.3 }}
+            aria-hidden="true"
           >
             <motion.span
-              animate={{ opacity: [0.6, 1, 0.6] }}
+              animate={!shouldReduceMotion ? { opacity: [0.6, 1, 0.6] } : {}}
               transition={{ duration: 2, repeat: Infinity }}
             >
               
             </motion.span>
             developer.portfolio
           </motion.div>
-        </motion.div>
+        </motion.button>
 
         {/* Desktop Navigation - Glassmorphic pill */}
         <motion.ul
           className="hidden md:flex items-center gap-1 p-1.5 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 shadow-xl shadow-black/20"
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
+          role="list"
         >
           {navItems.map(({ id, label, icon }, index) => (
             <motion.li
               key={id}
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{
                 duration: 0.4,
                 delay: 0.4 + index * 0.1,
-                type: "spring",
+                type: shouldReduceMotion ? "tween" : "spring",
                 stiffness: 300,
                 damping: 25,
               }}
+              role="listitem"
             >
               <button
                 onClick={() => scrollToSection(id)}
                 className="relative px-5 py-2.5 rounded-full font-medium text-sm overflow-hidden transition-all duration-300 group"
+                aria-label={`Navigate to ${label}`}
+                aria-current={active === id ? "page" : undefined}
               >
                 {/* Active state background with gradient */}
                 {active === id && (
@@ -204,11 +244,14 @@ export default function Header() {
                 {/* Hover glow effect */}
                 <motion.div
                   className="absolute inset-0 bg-white/0 group-hover:bg-white/5 rounded-full transition-colors duration-300"
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={!shouldReduceMotion ? { scale: 1.05 } : {}}
                 />
 
                 <span className="relative z-10 flex items-center gap-2">
-                  <span className={`text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${active === id ? 'text-white' : 'text-blue-400'}`}>
+                  <span 
+                    className={`text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${active === id ? 'text-white' : 'text-blue-400'}`}
+                    aria-hidden="true"
+                  >
                     {icon}
                   </span>
                   <span className={`transition-colors duration-300 ${
@@ -228,7 +271,7 @@ export default function Header() {
         <motion.button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden relative w-10 h-10 flex flex-col items-center justify-center gap-1.5 z-50 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm"
-          aria-label="Toggle menu"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -272,33 +315,39 @@ export default function Header() {
             transition={{ duration: 0.3 }}
             className="md:hidden fixed inset-0 bg-slate-950/98 backdrop-blur-2xl z-40"
             onClick={() => setMenuOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation menu"
           >
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
+              exit={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
               transition={{ duration: 0.4, delay: 0.1 }}
               className="flex flex-col items-center justify-center h-full px-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <nav className="w-full max-w-md">
-                <ul className="flex flex-col gap-3">
+              <nav className="w-full max-w-md" aria-label="Mobile navigation">
+                <ul className="flex flex-col gap-3" role="list">
                   {navItems.map(({ id, label, icon }, index) => (
                     <motion.li
                       key={id}
-                      initial={{ opacity: 0, x: -30 }}
+                      initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -30 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{
                         duration: 0.4,
                         delay: 0.2 + index * 0.1,
-                        type: "spring",
+                        type: shouldReduceMotion ? "tween" : "spring",
                         stiffness: 260,
                         damping: 20,
                       }}
+                      role="listitem"
                     >
                       <button
                         onClick={() => scrollToSection(id)}
                         className="relative w-full group"
+                        aria-label={`Navigate to ${label}`}
+                        aria-current={active === id ? "page" : undefined}
                       >
                         <div className={`relative overflow-hidden rounded-2xl p-5 transition-all duration-300 ${
                           active === id
@@ -309,13 +358,17 @@ export default function Header() {
                           <motion.div
                             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
                             initial={{ x: "-100%" }}
-                            whileHover={{ x: "100%" }}
+                            whileHover={!shouldReduceMotion ? { x: "100%" } : {}}
                             transition={{ duration: 0.6 }}
+                            aria-hidden="true"
                           />
 
                           <div className="relative flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <span className={`text-xl ${active === id ? 'text-white' : 'text-blue-400'}`}>
+                              <span 
+                                className={`text-xl ${active === id ? 'text-white' : 'text-blue-400'}`}
+                                aria-hidden="true"
+                              >
                                 {icon}
                               </span>
                               <span className={`text-2xl font-semibold transition-colors ${
@@ -327,8 +380,9 @@ export default function Header() {
                             
                             <motion.span
                               className={`text-sm font-mono ${active === id ? 'text-white/80' : 'text-white/40'}`}
-                              animate={{ x: [0, 5, 0] }}
+                              animate={!shouldReduceMotion ? { x: [0, 5, 0] } : {}}
                               transition={{ duration: 1.5, repeat: Infinity }}
+                              aria-hidden="true"
                             >
                               →
                             </motion.span>
@@ -348,7 +402,7 @@ export default function Header() {
                 transition={{ delay: 0.6 }}
               >
                 <p className="text-xs font-mono text-white/50">
-                  © 2024 Milan • Developer Portfolio
+                  © {new Date().getFullYear()} Milan • Developer Portfolio
                 </p>
               </motion.div>
             </motion.div>
