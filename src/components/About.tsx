@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
 import { 
   HiCodeBracket, 
@@ -57,13 +57,45 @@ const STATS = [
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.95, 1, 1, 0.95]);
+  const opacity = useTransform(
+    scrollYProgress, 
+    [0, 0.2, 0.8, 1], 
+    shouldReduceMotion ? [1, 1, 1, 1] : [0, 1, 1, 0]
+  );
+  
+  const scale = useTransform(
+    scrollYProgress, 
+    [0, 0.2, 0.8, 1], 
+    shouldReduceMotion ? [1, 1, 1, 1] : [0.95, 1, 1, 0.95]
+  );
+
+  // Animation variants with reduced motion support
+  const fadeInUp = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  const fadeInLeft = {
+    hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -30 },
+    visible: { opacity: 1, x: 0 }
+  };
+
+  const fadeInRight = {
+    hidden: { opacity: 0, x: shouldReduceMotion ? 0 : 30 },
+    visible: { opacity: 1, x: 0 }
+  };
+
+  const scaleIn = {
+    hidden: { opacity: 0, scale: shouldReduceMotion ? 1 : 0.8 },
+    visible: { opacity: 1, scale: 1 }
+  };
 
   return (
     <section
@@ -72,14 +104,14 @@ export default function About() {
       className="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white px-4 sm:px-6 lg:px-8 py-24 sm:py-32 overflow-hidden"
     >
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <motion.div
           className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"
-          animate={{
+          animate={!shouldReduceMotion ? {
             x: [0, 100, 0],
             y: [0, -50, 0],
             scale: [1, 1.2, 1],
-          }}
+          } : {}}
           transition={{
             duration: 20,
             repeat: Infinity,
@@ -88,11 +120,11 @@ export default function About() {
         />
         <motion.div
           className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
-          animate={{
+          animate={!shouldReduceMotion ? {
             x: [0, -100, 0],
             y: [0, 50, 0],
             scale: [1.2, 1, 1.2],
-          }}
+          } : {}}
           transition={{
             duration: 25,
             repeat: Infinity,
@@ -108,9 +140,10 @@ export default function About() {
         {/* Section Header */}
         <div className="text-center mb-16 sm:mb-20">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full mb-6"
           >
@@ -119,9 +152,10 @@ export default function About() {
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
           >
@@ -131,9 +165,10 @@ export default function About() {
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-xl text-white/60 max-w-3xl mx-auto"
           >
@@ -145,9 +180,10 @@ export default function About() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 mb-20">
           {/* Story Column */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInLeft}
             transition={{ duration: 0.8 }}
             className="space-y-6"
           >
@@ -187,18 +223,20 @@ export default function About() {
 
           {/* Highlights Column */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInRight}
             transition={{ duration: 0.8 }}
             className="space-y-6"
           >
             {HIGHLIGHTS.map((highlight, index) => (
               <motion.div
                 key={highlight.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-100px" }}
+                variants={fadeInUp}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="group relative"
               >
@@ -229,9 +267,10 @@ export default function About() {
 
         {/* Stats Bar */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
           transition={{ duration: 0.8 }}
           className="mb-20"
         >
@@ -240,9 +279,10 @@ export default function About() {
               {STATS.map((stat, index) => (
                 <motion.div
                   key={stat.label}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-100px" }}
+                  variants={scaleIn}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="text-center"
                 >
@@ -260,9 +300,10 @@ export default function About() {
 
         {/* Tech Stack Categories */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
           transition={{ duration: 0.8 }}
         >
           <div className="text-center mb-12">
@@ -278,19 +319,23 @@ export default function About() {
             {TECH_CATEGORIES.map((category, categoryIndex) => (
               <motion.div
                 key={category.category}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-100px" }}
+                variants={fadeInUp}
                 transition={{ duration: 0.6, delay: categoryIndex * 0.15 }}
                 className="group"
               >
                 <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 h-full">
                   {/* Hover gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"
                     style={{
-                      backgroundImage: `linear-gradient(135deg, ${category.color.split(' ')[0].replace('from-', '')} 0%, ${category.color.split(' ')[1].replace('to-', '')} 100%)`
+                      backgroundImage: `linear-gradient(135deg, var(--tw-gradient-stops))`
                     }}
-                  />
+                  >
+                    <div className={`absolute inset-0 bg-gradient-to-br ${category.color} rounded-2xl`} />
+                  </div>
 
                   <div className="relative">
                     {/* Category header */}
@@ -308,14 +353,15 @@ export default function About() {
                       {category.technologies.map((tech, techIndex) => (
                         <motion.span
                           key={tech}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          viewport={{ once: true }}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true, margin: "-100px" }}
+                          variants={scaleIn}
                           transition={{ 
                             duration: 0.3, 
                             delay: categoryIndex * 0.15 + techIndex * 0.05 
                           }}
-                          whileHover={{ scale: 1.05, y: -2 }}
+                          whileHover={!shouldReduceMotion ? { scale: 1.05, y: -2 } : {}}
                           className="px-3 py-1.5 text-sm bg-white/5 border border-white/10 rounded-lg text-white/80 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-200 cursor-default"
                         >
                           {tech}
